@@ -81,7 +81,8 @@ vector<int> SortingManager::TwoWayInsertionSort(vector<int> ArrayToSort)
 	return SortResult;
 }
 
-// 表插入排序，用2n次指针移动代替记录的移动，O(n^2)
+// 表插入排序，查找/比较次数相同，用2n次指针移动代替记录的移动，O(n^2)
+// 静态链表缺点：只能顺序查找而不能随机访问
 SLinkList SortingManager::StaticListInsertionSort(vector<int> ArraytoSort)
 {
 	SLinkList Result;
@@ -94,9 +95,9 @@ SLinkList SortingManager::StaticListInsertionSort(vector<int> ArraytoSort)
 
 	for (int i = 2; i < ArraytoSort.size(); i++) {
 		int CurrentRecord = ArraytoSort[i]; // 当前待插入项
-		int CurrentPointer = Result.r[0].next; // 初始指向最小的记录
+		int CurrentPointer = 0; // 初始指向表头
 		while (1) {
-			if ((CurrentRecord < Result.r[Result.r[CurrentPointer].next].rc) // 且小于当前指向的记录的下一个记录
+			if ((CurrentRecord < Result.r[Result.r[CurrentPointer].next].rc) // 若当前记录小于当前指向的下一个记录
 			|| Result.r[CurrentPointer].next == 0){ // 或是表尾
 				break; // 则跳出循环
 			} else { 
@@ -106,10 +107,133 @@ SLinkList SortingManager::StaticListInsertionSort(vector<int> ArraytoSort)
 		
 		
 		SLNode newnode(CurrentRecord, Result.r[CurrentPointer].next); // 新建表结点，数据为插入项，指向当前所指的下一个（比待插入项大的）
+		Result.length++;
 		Result.r[i] = newnode;
 		Result.r[CurrentPointer].next = i;
 	}
 	Result.print();
+	cout << endl;
+	return Result;
+}
+
+// 按参数IncrementSeq给出的增量来进行排序，IncrementSeq中存着一个递减序列，所以希尔排序又叫缩小增量排序
+// 增量序列示例：[9, 7, 5, 3, 1]
+// 希尔排序的复杂度是增量序列的函数
+vector<int> SortingManager::ShellSort(vector<int> ArraytoSort, vector<int> IncrementSeq)
+{
+	vector<int> Result(ArraytoSort);
+
+	for (int i = 0; i < IncrementSeq.size(); i++)
+		ShellInsert(Result, IncrementSeq[i]);
+	Result[0] = -1; // 还原哨兵
+	return Result;
+}
+
+// 以参数Incre作为增量进行一趟希尔插入排序
+// 将数组分成了多个子序列进行插入排序，如其中一个序列是[0, 0+Incre, 0+2*Incre ……]
+void SortingManager::ShellInsert(vector<int>& ArraytoSort, int Incre)
+{
+	int i, j;
+	for (i = Incre + 1; i < ArraytoSort.size(); i++) {
+		if (ArraytoSort[i] < ArraytoSort[i - Incre]) { // ArraytoSort[i]是当前待插入项，若当前小于前面的有序序列的最大值，则需要在前面序列中找一个合适位置插入
+			ArraytoSort[0] = ArraytoSort[i]; // 暂存待插入项
+			for (j = i; j-Incre >= 0; j -= Incre) { // 注意判断条件是J-incre>=0而非j>=0
+				if (ArraytoSort[0] < ArraytoSort[j - Incre]) {
+					ArraytoSort[j] = ArraytoSort[j - Incre]; // 后移一位
+				} else { // 当前插入项大于前面那项,j即为要插入的位置
+					break;
+				}
+			}
+			ArraytoSort[j] = ArraytoSort[0];
+		}
+	}
+}
+
+// O（n^2）
+vector<int> SortingManager::BubbleSort(vector<int> ArrayToSort)
+{
+	vector<int> Result(ArrayToSort);
+	bool Change = true;
+	for (int i = Result.size() - 1; i > 0 && Change; i--) { // 每轮将一个前i个最大的数换到位置[i]
+		Change = false; // 未发生交换时排序结束
+		for (int j = 1; j <= i; j++) { // 注意j的初始值
+			if (Result[j - 1] > Result[j]) { // 将较大的数往后换
+				int temp = Result[j - 1];
+				Result[j - 1] = Result[j];
+				Result[j] = temp;
+				Change = true;
+			}
+		}
+	}
+	return Result;
+}
+
+// 结果将arraytosort[low…………high]中的记录以pivot为界，处于pivot左边的比pivot的值都小，右边的都大
+int SortingManager::Partition(vector<int>& ArrayToSort, int low, int high)
+{
+	int temp = ArrayToSort[low]; // 暂存pivot值，在[low]挖出“坑”
+	int pivotKey = ArrayToSort[low]; // 以[low]作pivot
+	while (low < high) {
+		while (low < high && ArrayToSort[high] >= pivotKey) // high的值应该比pivot的值要大
+			high--;											// 若符合大于pivot值条件则从高位到低位遍历
+		ArrayToSort[low] = ArrayToSort[high]; // 出现[high]的值比[pivot]的值要小，要将此值换到pivot左边，填[low]的“坑”，[high]出现一个“坑”
+		// 不用担心[low]的值丢失，因为已经暂存在[0]
+		while (low < high && ArrayToSort[low] <= pivotKey)
+			low++;
+		ArrayToSort[high] = ArrayToSort[low]; // 出现[low]的值比[pivot]的值要大，将此值换到pivot右边，填[high]的“坑”，并在[low]出现一个“坑”
+		// 不用担心[high]的值丢失，因为已存在low
+	}
+	ArrayToSort[low] = temp; // 填回[low]的“坑”
+	return low;
+}
+
+vector<int> SortingManager::QuickSort(vector<int>& ArrayToSort, int low, int high)
+{
+	if (low < high) {
+		int pivot = Partition(ArrayToSort, low, high);
+		QuickSort(ArrayToSort, low, pivot - 1);
+		QuickSort(ArrayToSort, pivot+1, high);
+	}
+	return ArrayToSort;
+}
+
+vector<int> SortingManager::QuickSort_ConciseVersion(vector<int>& ArrayToSort, int low, int high)
+{
+	if (low < high) {
+		int temp = ArrayToSort[low]; // 暂存pivot值，在[low]挖出“坑”
+		int pivotKey = ArrayToSort[low]; // 以[low]作pivot
+		int l = low, h = high;
+		while (l < h) {
+			while (l < h && ArrayToSort[h] >= pivotKey) // high的值应该比pivot的值要大
+				h--;											// 若符合大于pivot值条件则从高位到低位遍历
+			ArrayToSort[l] = ArrayToSort[h]; // 出现[high]的值比[pivot]的值要小，要将此值换到pivot左边，填[low]的“坑”，[high]出现一个“坑”
+												  // 不用担心[low]的值丢失，因为已经暂存在[0]
+			while (l < h && ArrayToSort[l] <= pivotKey)
+				l++;
+			ArrayToSort[h] = ArrayToSort[l]; // 出现[low]的值比[pivot]的值要大，将此值换到pivot右边，填[high]的“坑”，并在[low]出现一个“坑”
+												  // 不用担心[high]的值丢失，因为已存在low
+		}
+		ArrayToSort[l] = temp; // 填回[low]的“坑”
+		QuickSort_ConciseVersion(ArrayToSort, low, l - 1);
+		QuickSort_ConciseVersion(ArrayToSort, l + 1, high);
+	}
+	return ArrayToSort;
+}
+
+vector<int> SortingManager::SelectionSort(vector<int> ArrayToSort)
+{
+	vector<int> Result(ArrayToSort);
+	for (int i = 0; i < Result.size(); i++) { // 每次循环从[i……result.size()-1]中选一个最小的放在位置i
+		int MinIndex = i;
+		for (int j = i + 1; j < Result.size(); j++) {
+			if (Result[j] < Result[MinIndex])
+				MinIndex = j;
+		}
+		// 找到最小的记录后和[i]交换
+		int temp = Result[i];
+		Result[i] = Result[MinIndex];
+		Result[MinIndex] = temp;
+	}
 	return Result;
 }
 

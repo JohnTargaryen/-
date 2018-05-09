@@ -1,5 +1,9 @@
 ﻿  SortingManager.cpp
 g:\大三下\data-structure-by-yan-wei-min\sorting\sorting\sortingmanager.cpp(22): warning C4018: “<”: 有符号/无符号不匹配
 g:\大三下\data-structure-by-yan-wei-min\sorting\sorting\sortingmanager.cpp(47): warning C4018: “<”: 有符号/无符号不匹配
-g:\大三下\data-structure-by-yan-wei-min\sorting\sorting\sortingmanager.cpp(95): warning C4018: “<”: 有符号/无符号不匹配
+g:\大三下\data-structure-by-yan-wei-min\sorting\sorting\sortingmanager.cpp(96): warning C4018: “<”: 有符号/无符号不匹配
+g:\大三下\data-structure-by-yan-wei-min\sorting\sorting\sortingmanager.cpp(126): warning C4018: “<”: 有符号/无符号不匹配
+g:\大三下\data-structure-by-yan-wei-min\sorting\sorting\sortingmanager.cpp(137): warning C4018: “<”: 有符号/无符号不匹配
+g:\大三下\data-structure-by-yan-wei-min\sorting\sorting\sortingmanager.cpp(226): warning C4018: “<”: 有符号/无符号不匹配
+g:\大三下\data-structure-by-yan-wei-min\sorting\sorting\sortingmanager.cpp(228): warning C4018: “<”: 有符号/无符号不匹配
   Sorting.vcxproj -> G:\大三下\Data-Structure-By-Yan-Wei-Min\Sorting\Debug\Sorting.exe
