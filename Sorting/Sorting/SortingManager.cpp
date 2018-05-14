@@ -237,5 +237,88 @@ vector<int> SortingManager::SelectionSort(vector<int> ArrayToSort)
 	return Result;
 }
 
+// 调整顶点为index的堆，结果使index以下的堆调整为最大堆
+void SortingManager::HeapAdjust(vector<int>& HeapToAdjust, int index, int heapsize) {
+	int max = index; // 最大项的位置
+	int left = index * 2 + 1; // 左孩子的位置
+	int right = 2 * (index + 1); // 右孩子的位置
+
+	// 从父节点和左右孩子节点中选出最大项，将最大项的位置存在max
+	if (left < heapsize && HeapToAdjust[index] < HeapToAdjust[left]) {
+		max = left;
+	}
+	if (right < heapsize && HeapToAdjust[max] < HeapToAdjust[right]) {
+		max = right;
+	}
+
+	if (max != index){ // 最大项不是父节点，则需要调整
+
+		// 将最大项与父节点交换
+		int temp = HeapToAdjust[index];
+		HeapToAdjust[index] = HeapToAdjust[max];
+		HeapToAdjust[max] = temp;
+
+		// 交换后可能使子堆出现不满足最大堆的情况，于是通过递归调整子堆
+		HeapAdjust(HeapToAdjust, max, heapsize); // 递归调整
+	}
+}
+
+// O(nlogn), O(1)
+void SortingManager::HeapSort(vector<int>& ArrayToSort)
+{
+	int heapsize = ArrayToSort.size();
+
+	// 建堆过程
+	for (int i = heapsize / 2 - 1; i >= 0; i--) { // 从倒数第二层开始往上调整堆
+		HeapAdjust(ArrayToSort, i, heapsize);
+	} // 循环结束后获得一个最大堆
+
+	// 排序过程
+	for (int i = heapsize - 1; i > 0; i--) {
+		// 将最大项与最后一项交换
+		int temp = ArrayToSort[0];
+		ArrayToSort[0] = ArrayToSort[i]; 
+		ArrayToSort[i] = temp;
+
+		HeapAdjust(ArrayToSort, 0, i - 1); // 调整堆
+	}
+}
+
+// 0(nlogn) O(n)
+void SortingManager::MergeSort(vector<int>& ArrayToSort, int low, int high, vector<int> & result)
+{
+	if (low < high) {
+		int mid = (low + high) / 2;
+		MergeSort(ArrayToSort, low, mid, result);
+		MergeSort(ArrayToSort, mid + 1, high, result);
+		Merge(ArrayToSort, low, mid, high, result);
+	}
+}
+
+// 将arraytomerge[low....mid]与arraytomerge[mid+1....high]合并
+// 注意写回原数组，让原数组合并后的部分有序
+void SortingManager::Merge(vector<int>& ArrayToMerge, int low, int mid, int high, vector<int>& MergedArray)
+{
+	int k = 0, i = low, j = mid + 1;
+	for (; i <= mid && j <= high; k++) {
+		if (ArrayToMerge[i] < ArrayToMerge[j])
+			MergedArray[k] = ArrayToMerge[i++];
+		else
+			MergedArray[k] = ArrayToMerge[j++];
+	}
+	while (i <= mid)
+		MergedArray[k++] = ArrayToMerge[i++];
+	while (j <= high)
+		MergedArray[k++] = ArrayToMerge[j++];
+
+	k = 0;
+	// 写回
+	for (int i = low; i <= high; i++)
+		ArrayToMerge[i] = MergedArray[k++];
+		
+}
+
+
+
 
 

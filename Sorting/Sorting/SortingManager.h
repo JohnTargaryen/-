@@ -30,6 +30,14 @@ public:
 
 	vector<int> SelectionSort(vector<int> ArrayToSort);
 
+	void HeapAdjust(vector<int>& HeapToAdjust, int index, int heapsize);
+
+	void HeapSort(vector<int>& ArrayToSort);
+
+	void MergeSort(vector<int>& ArrayToSort, int low, int high, vector<int>& result);
+
+	void Merge(vector<int>& ArrayToMerge, int low, int mid, int high, vector<int>& MergedArray);
+
 private:
 	
 };
